@@ -7,8 +7,9 @@ app_name = "core"
 
 router = routers.SimpleRouter()
 router.register("categories", views.CategoryModelViewSet, basename="category")
+router.register("transactions", views.TransactionModelViewSet, basename="transaction")
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("currency/", views.CurrencyListAPIView.as_view(), name="currency"),
+    path("currencies/", views.CurrencyListAPIView.as_view(), name="currencies"),
 ] + router.urls

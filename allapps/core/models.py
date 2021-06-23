@@ -27,5 +27,8 @@ class Transaction(models.Model):
         Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="transactions"
     )
 
+    class Meta:
+        ordering = ["id"]
+
     def __str__(self):
-        return self.amount
+        return str(self.amount)
