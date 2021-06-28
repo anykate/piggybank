@@ -5,10 +5,9 @@ from rest_framework import filters, generics, permissions, viewsets
 
 from .models import Category, Currency, Transaction
 from .serializers import (
+    CategorySerializer,
     CurrencySerializer,
-    ReadCategorySerializer,
     ReadTransactionSerializer,
-    WriteCategorySerializer,
     WriteTransactionSerializer,
 )
 
@@ -27,14 +26,10 @@ class CurrencyListAPIView(generics.ListAPIView):
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = None
+    serializer_class = CategorySerializer
 
     def get_queryset(self):
         return Category.objects.select_related("user").filter(user=self.request.user)
-
-    def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
-            return ReadCategorySerializer
-        return WriteCategorySerializer
 
     # def perform_create(self, serializer):
     #     serializer.save(user=self.request.user)

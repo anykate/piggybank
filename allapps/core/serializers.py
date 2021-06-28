@@ -18,21 +18,12 @@ class CurrencySerializer(serializers.ModelSerializer):
         fields = ["id", "code", "name"]
 
 
-class WriteCategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Category
-        fields = ["name", "user"]
-
-
-class ReadCategorySerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(slug_field="username", queryset=get_user_model().objects.all())
-
-    class Meta:
-        model = Category
         fields = ["id", "name", "user"]
-        read_only_fields = fields
 
 
 class WriteTransactionSerializer(serializers.ModelSerializer):
@@ -44,10 +35,16 @@ class WriteTransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ["amount", "currency", "created", "updated", "description", "category", "user"]
 
+    def __init__(self, *args, **kwargs):
+        super(WriteTransactionSerializer, self).__init__(*args, **kwargs)
+        user = self.context["request"].user
+        # self.fields["category"].queryset = Category.objects.select_related("user").filter(user=user)
+        self.fields["category"].queryset = user.categories.all()
+
 
 class ReadTransactionSerializer(serializers.ModelSerializer):
     currency = CurrencySerializer()
-    category = ReadCategorySerializer()
+    category = CategorySerializer()
     user = ReadUserSerializer()
 
     class Meta:
